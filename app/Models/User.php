@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-class User extends Authenticatable
+class User extends Model
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -30,19 +29,25 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
+
     /**
-     * Get the attributes that should be cast.
+     * Get all of the assessments for the User
      *
-     * @return array<string, string>
+     * @return MorphToMany
      */
-    protected function casts(): array
+    public function assessments(): MorphToMany
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->morphedByMany(Assessment::class, 'task' , 'users_tasks');
+    }
+ 
+    /**
+     * Get all of the surveys for the User
+     * @return MorphToMany
+     */
+    public function surveys(): MorphToMany
+    {
+        return $this->morphedByMany(Survey::class, 'task' , 'users_tasks');
     }
 }
